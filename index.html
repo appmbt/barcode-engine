@@ -1,309 +1,381 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Implementaciones - Barcodes</title>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Implementaciones - Barcodes</title>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
 
-<style>
-html, body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  overflow: hidden;
-}
+        <style>
+            html,
+            body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                overflow: hidden;
+            }
 
-* {
-  box-sizing: border-box;
-  font-family: "Segoe UI", Arial, sans-serif;
-}
+            * {
+                box-sizing: border-box;
+                font-family: "Segoe UI", Arial, sans-serif;
+            }
 
-.fullscreen-container {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-}
+            .fullscreen-container {
+                position: fixed;
+                inset: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+            }
 
-#background-lottie {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  opacity: 0.5;
-  pointer-events: none;
-}
+            #background-lottie {
+                position: fixed;
+                inset: 0;
+                z-index: 0;
+                opacity: 0.5;
+                pointer-events: none;
+            }
 
-.central-container {
-  position: relative;
-  z-index: 2;
-  width: 45vw;
-  height: 80vh;
-  background: rgba(236,236,250,.9);
-  border-radius: 45px;
-  box-shadow: 0 25px 70px rgba(0,0,0,.35);
-  display: flex;
-  transition: .5s ease;
-}
+            .central-container {
+                position: relative;
+                z-index: 2;
+                width: 45vw;
+                height: 80vh;
+                background: rgba(236, 236, 250, 0.9);
+                border-radius: 45px;
+                box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
+                display: flex;
+                transition: 0.5s ease;
+            }
 
-.central-container.expandido {
-  width: 65vw;
-}
+            .central-container.expandido {
+                width: 65vw;
+            }
 
-#logo-mbt {
-  position: absolute;
-  top: 35px;
-  left: 45px;
-  width: 115px;
-  z-index: 5;
-}
+            #logo-mbt {
+                position: absolute;
+                top: 35px;
+                left: 45px;
+                width: 115px;
+                z-index: 5;
+            }
 
-.left-panel {
-  flex: 1;
-  padding: 40px 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
+            .left-panel {
+                flex: 1;
+                padding: 40px 30px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
 
-.central-container.expandido .left-panel {
-  border-right: 1px solid rgba(0,0,0,.08);
-}
+            .central-container.expandido .left-panel {
+                border-right: 1px solid rgba(0, 0, 0, 0.08);
+            }
 
-.left-panel h2 {
-  margin-bottom: 22px;
-  font-size: 25px;
-  font-weight: 700;
-  color: #44516b;
-}
+            .left-panel h2 {
+                margin-bottom: 22px;
+                font-size: 25px;
+                font-weight: 700;
+                color: #44516b;
+            }
 
-#lottie-bot {
-  width: 250px;
-  margin-bottom: 22px;
-}
+            #lottie-bot {
+                width: 250px;
+                margin-bottom: 22px;
+            }
 
-.search-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+            .search-container {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
 
-.search-container select,
-.search-container input {
-  text-align: center;
-  width: 60%;
-  padding: 10px 14px;
-  border-radius: 25px;
-  border: 2px solid rgba(57,16,123,.75);
-  font-size: 14px;
-  margin-bottom: 12px;
-}
+            .search-container select,
+            .search-container input {
+                text-align: center;
+                width: 60%;
+                padding: 10px 14px;
+                border-radius: 25px;
+                border: 2px solid rgba(57, 16, 123, 0.75);
+                font-size: 14px;
+                margin-bottom: 12px;
+            }
 
-#folioLabel {
-  margin-top: 25px;
-  font-weight: 700;
-  font-size: 26px;
-  color: #2f6dff;
-}
+            #folioLabel {
+                margin-top: 25px;
+                font-weight: 700;
+                font-size: 26px;
+                color: #2f6dff;
+            }
 
-.right-panel {
-  flex: 1;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 30px;
-}
+            .right-panel {
+                flex: 1;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                padding: 40px 30px;
+            }
 
-.central-container.expandido .right-panel {
-  display: flex;
-}
+            .central-container.expandido .right-panel {
+                display: flex;
+            }
 
-.card {
-  display: flex;
-  align-items: center;
-  gap: 25px;
-}
+            .card {
+                display: flex;
+                align-items: center;
+                gap: 25px;
+            }
 
-.card .label {
-  font-weight: 700;
-  font-size: 22px;
-  color: #654E69;
-}
+            .card .label {
+                font-weight: 700;
+                font-size: 22px;
+                color: #654e69;
+            }
 
-.card img {
-  width: 330px;
-  height: 130px;
-  background: white;
-  padding: 15px;
-  border-radius: 15px;
-  cursor: zoom-in;
-}
+            .card img {
+                width: 330px;
+                height: 130px;
+                background: white;
+                padding: 15px;
+                border-radius: 15px;
+                cursor: zoom-in;
+            }
 
-#barcode-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.75);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
+            #barcode-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.75);
+                display: none;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+            }
 
-#barcode-overlay img {
-  max-width: 90vw;
-  max-height: 70vh;
-  background: white;
-  padding: 20px;
-  border-radius: 16px;
-}
-</style>
-</head>
+            #barcode-overlay img {
+                max-width: 90vw;
+                max-height: 70vh;
+                background: white;
+                padding: 20px;
+                border-radius: 16px;
+            }
 
-<body>
+            /* ===== MOBILE ===== */
+            @media (max-width: 768px) {
+                /* ✅ PERMITIR SCROLL EN MÓVIL */
+                html,
+                body {
+                    height: auto;
+                    overflow-y: auto;
+                }
 
-<div class="fullscreen-container">
-  <div id="background-lottie"></div>
+                .fullscreen-container {
+                    position: relative;
+                    min-height: 100vh;
+                    height: auto;
+                }
 
-  <div class="central-container" id="mainContainer">
+                /* ✅ LOGO RESPONSIVO */
+                #logo-mbt {
+                    width: 25%;
+                    max-width: 70px;
+                    min-width: 40px;
+                    left: 25px;
+                    top: 20px;
+                }
 
-    <div id="logo-mbt"></div>
+                /* ✅ CONTENEDOR VERTICAL */
+                .central-container,
+                .central-container.expandido {
+                    width: 95vw;
+                    height: auto;
+                    min-height: 85vh;
+                    flex-direction: column;
+                    padding-bottom: 20px;
+                }
 
-    <div class="left-panel">
-      <h2>Implementaciones Mainbit</h2>
-      <div id="lottie-bot"></div>
+                .left-panel {
+                    border-right: none !important;
+                    padding-bottom: 15px;
+                }
 
-      <div class="search-container">
-        <select id="locationSelect">
-          <option value="">Selecciona una ubicación</option>
-          <option value="Vertiz">Vertiz</option>
-          <option value="Ajusco">Ajusco</option>
-        </select>
+                /* ✅ PANEL DERECHO OCULTO AL INICIO */
+                .right-panel {
+                    display: none;
+                    padding: 10px 20px 30px;
+                }
 
-        <input id="folioInput" placeholder="Ingresa la serie del cable para generar el código..." />
-      </div>
+                /* ✅ MOSTRAR RESULTADO SOLO CUANDO HAY MATCH */
+                .central-container.expandido .right-panel {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                }
 
-      <div id="folioLabel"></div>
-    </div>
+                /* ✅ INPUTS MÁS ANCHOS EN MÓVIL */
+                .search-container select,
+                .search-container input {
+                    width: 90%;
+                }
 
-    <div class="right-panel">
-      <div class="card">
-        <span class="label">Serie</span>
-        <img id="serieBarcode">
-      </div>
-    </div>
+                /* ✅ TARJETA VERTICAL */
+                .card {
+                    flex-direction: column;
+                    align-items: center;
+                    text-align: center;
+                    gap: 15px;
+                }
 
-  </div>
-</div>
+                .card .label {
+                    text-align: center;
+                    min-width: auto;
+                }
 
-<div id="barcode-overlay">
-  <img id="barcode-zoom">
-</div>
+                .card img {
+                    width: 100%;
+                    max-width: 330px;
+                    height: auto;
+                }
+            }
+        </style>
+    </head>
 
-<script>
-/* ===== LOTTIE ===== */
-const botContainer = document.getElementById("lottie-bot");
-const mainContainer = document.getElementById("mainContainer");
-const folioInput = document.getElementById("folioInput");
-const folioLabel = document.getElementById("folioLabel");
-const locationSelect = document.getElementById("locationSelect");
-const serieBarcode = document.getElementById("serieBarcode");
+    <body>
+        <div class="fullscreen-container">
+            <div id="background-lottie"></div>
 
-let botAnimation = null;
-let timeout = null;
+            <div class="central-container" id="mainContainer">
+                <div id="logo-mbt"></div>
 
-function loadBot(path) {
-  if (botAnimation) botAnimation.destroy();
-  botAnimation = lottie.loadAnimation({
-    container: botContainer,
-    path,
-    renderer: "svg",
-    loop: true,
-    autoplay: true
-  });
-}
+                <div class="left-panel">
+                    <h2>Implementaciones Mainbit</h2>
+                    <div id="lottie-bot"></div>
 
-loadBot("./Hi_SN_bot.json");
+                    <div class="search-container">
+                        <select id="locationSelect">
+                            <option value="">Selecciona una ubicación</option>
+                            <option value="Vertiz">Vertiz</option>
+                            <option value="Ajusco">Ajusco</option>
+                        </select>
 
-/* ===== DATA ===== */
-let baseDatos = [];
+                        <input id="folioInput" placeholder="Ingresa la serie del cable para generar el código..." />
+                    </div>
 
-fetch("data_imp.csv")
-  .then(r => r.text())
-  .then(t => {
-    baseDatos = t
-      .split("\n")
-      .slice(1)
-      .map(f => {
-        const [location, cpu, monitor, cable] = f.split(",");
-        if (!location || !cable) return null;
-        return {
-          location: location.trim(),
-          cable: cable.trim()
-        };
-      })
-      .filter(Boolean);
-  });
+                    <div id="folioLabel"></div>
+                </div>
 
-function barcode(valor) {
-  return `https://barcodeapi.org/api/code128/${valor}`;
-}
+                <div class="right-panel">
+                    <div class="card">
+                        <span class="label">Serie</span>
+                        <img id="serieBarcode" />
+                    </div>
+                </div>
+            </div>
+        </div>
 
-/* ===== BUSQUEDA ===== */
-folioInput.addEventListener("input", e => {
-  const cable = e.target.value.trim();
-  const location = locationSelect.value.trim();
+        <div id="barcode-overlay">
+            <img id="barcode-zoom" />
+        </div>
 
-  clearTimeout(timeout);
+        <script>
+            /* ===== LOTTIE ===== */
+            const botContainer = document.getElementById("lottie-bot");
+            const mainContainer = document.getElementById("mainContainer");
+            const folioInput = document.getElementById("folioInput");
+            const folioLabel = document.getElementById("folioLabel");
+            const locationSelect = document.getElementById("locationSelect");
+            const serieBarcode = document.getElementById("serieBarcode");
 
-  if (!cable || !location) {
-    mainContainer.classList.remove("expandido");
-    folioLabel.textContent = "";
-    serieBarcode.src = "";
-    loadBot("./Hi_SN_bot.json");
-    return;
-  }
+            let botAnimation = null;
+            let timeout = null;
 
-  timeout = setTimeout(() => {
-    const item = baseDatos.find(x =>
-      x.location === location &&
-      x.cable === cable
-    );
+            function loadBot(path) {
+                if (botAnimation) botAnimation.destroy();
+                botAnimation = lottie.loadAnimation({
+                    container: botContainer,
+                    path,
+                    renderer: "svg",
+                    loop: true,
+                    autoplay: true,
+                });
+            }
 
-    if (!item) {
-      folioLabel.textContent = "No encontrado";
-      mainContainer.classList.remove("expandido");
-      serieBarcode.src = "";
-      return;
-    }
+            loadBot("./Hi_SN_bot.json");
 
-    mainContainer.classList.add("expandido");
-    folioLabel.textContent = item.cable;
-    serieBarcode.src = barcode(item.cable);
-    loadBot("./Confused_SN_bot.json");
-  }, 250);
-});
+            /* ===== DATA ===== */
+            let baseDatos = [];
 
-/* ===== ZOOM BARCODE ===== */
-const overlay = document.getElementById("barcode-overlay");
-const zoomImg = document.getElementById("barcode-zoom");
+            fetch("data_imp.csv")
+                .then((r) => r.text())
+                .then((t) => {
+                    baseDatos = t
+                        .split("\n")
+                        .slice(1)
+                        .map((f) => {
+                            const [location, cpu, monitor, cable] = f.split(",");
+                            if (!location || !cable) return null;
+                            return {
+                                location: location.trim(),
+                                cable: cable.trim(),
+                            };
+                        })
+                        .filter(Boolean);
+                });
 
-document.addEventListener("click", e => {
-  if (e.target.tagName === "IMG" && e.target.closest(".card")) {
-    zoomImg.src = e.target.src;
-    overlay.style.display = "flex";
-  }
-});
+            function barcode(valor) {
+                return `https://barcodeapi.org/api/code128/${valor}`;
+            }
 
-overlay.addEventListener("click", () => {
-  overlay.style.display = "none";
-  zoomImg.src = "";
-});
-</script>
+            /* ===== BUSQUEDA ===== */
+            folioInput.addEventListener("input", (e) => {
+                const cable = e.target.value.trim();
+                const location = locationSelect.value.trim();
 
-</body>
+                clearTimeout(timeout);
+
+                if (!cable || !location) {
+                    mainContainer.classList.remove("expandido");
+                    folioLabel.textContent = "";
+                    serieBarcode.src = "";
+                    loadBot("./Hi_SN_bot.json");
+                    return;
+                }
+
+                timeout = setTimeout(() => {
+                    const item = baseDatos.find((x) => x.location === location && x.cable === cable);
+
+                    if (!item) {
+                        folioLabel.textContent = "No encontrado";
+                        mainContainer.classList.remove("expandido");
+                        serieBarcode.src = "";
+                        return;
+                    }
+
+                    mainContainer.classList.add("expandido");
+                    folioLabel.textContent = item.cable;
+                    serieBarcode.src = barcode(item.cable);
+                    loadBot("./Confused_SN_bot.json");
+                }, 250);
+            });
+
+            /* ===== ZOOM BARCODE ===== */
+            const overlay = document.getElementById("barcode-overlay");
+            const zoomImg = document.getElementById("barcode-zoom");
+
+            document.addEventListener("click", (e) => {
+                if (e.target.tagName === "IMG" && e.target.closest(".card")) {
+                    zoomImg.src = e.target.src;
+                    overlay.style.display = "flex";
+                }
+            });
+
+            overlay.addEventListener("click", () => {
+                overlay.style.display = "none";
+                zoomImg.src = "";
+            });
+        </script>
+    </body>
 </html>
