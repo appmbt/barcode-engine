@@ -243,13 +243,9 @@ function loadBot(path) {
 
 loadBot("./Hi_SN_bot.json");
 
-/* ===== DATA ===== */
+/* ===== DATA (igual que antes) ===== */
 let baseDatos = [];
 
-/*
-CSV real:
-location,cpu,monitor,cable
-*/
 fetch("data_imp.csv")
   .then(r => r.text())
   .then(t => {
@@ -257,29 +253,21 @@ fetch("data_imp.csv")
       .split("\n")
       .slice(1)
       .map(f => {
-        const c = f.split(",");
-
-        return {
-          location: (c[0] || "").replace(/\r/g, "").trim().toUpperCase(),
-          cable: (c[3] || "").replace(/\r/g, "").trim().toUpperCase()
-        };
+        const [location, cpu, monitor, cable] = f.split(",");
+        return { location, cable };
       });
+  });
 
-    console.log("✅ CSV cargado", baseDatos.length, "registros");
-  })
-  .catch(err => console.error("❌ Error cargando CSV", err));
-
-/* ===== BARCODE ===== */
 function barcode(valor) {
   return `https://barcodeapi.org/api/code128/${valor}`;
 }
 
-/* ===== BUSQUEDA ===== */
+/* ===== BUSQUEDA (MISMA LÓGICA QUE WOT) ===== */
 folioInput.addEventListener("input", e => {
-  clearTimeout(timeout);
+  const cable = e.target.value.trim();
+  const location = locationSelect.value;
 
-  const cable = e.target.value.trim().toUpperCase();
-  const location = locationSelect.value.trim().toUpperCase();
+  clearTimeout(timeout);
 
   if (!cable || !location) {
     mainContainer.classList.remove("expandido");
@@ -291,21 +279,21 @@ folioInput.addEventListener("input", e => {
 
   timeout = setTimeout(() => {
     const item = baseDatos.find(x =>
-      x.location === location &&
-      x.cable === cable
+      x.cable === cable && x.location === location
     );
 
     if (!item) {
       folioLabel.textContent = "No encontrado";
       mainContainer.classList.remove("expandido");
-      serieBarcode.src = "";
       return;
     }
 
-    /* ✅ ENCONTRADO */
     mainContainer.classList.add("expandido");
+
+    /* ✅ El mismo cable */
     folioLabel.textContent = item.cable;
     serieBarcode.src = barcode(item.cable);
+
     loadBot("./Confused_SN_bot.json");
   }, 300);
 });
