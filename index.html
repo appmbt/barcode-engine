@@ -241,8 +241,10 @@ function loadBot(path) {
   });
 }
 
+/* Bot inicial */
 loadBot("./Hi_SN_bot.json");
 
+/* Fondo */
 lottie.loadAnimation({
   container: document.getElementById("background-lottie"),
   path: "./background1.json",
@@ -251,6 +253,7 @@ lottie.loadAnimation({
   autoplay: true
 });
 
+/* Logo */
 lottie.loadAnimation({
   container: document.getElementById("logo-mbt"),
   path: "./Logo_Mbt_wink.json",
@@ -262,19 +265,29 @@ lottie.loadAnimation({
 /* ===== DATA ===== */
 let baseDatos = [];
 
+/*
+Estructura del CSV:
+location,cpu,monitor,cable
+*/
 fetch("data_imp.csv")
   .then(r => r.text())
   .then(t => {
-    baseDatos = t.split("\n").slice(1).map(f => {
-      const c = f.split(",");
-      return {
-        location: c[0]?.trim(),
-        cable: c[3]?.trim(),
-        serie: c[3]?.trim()
-      };
-    });
+    baseDatos = t
+      .split("\n")
+      .slice(1) // quitar encabezado
+      .map(f => {
+        const c = f.split(",");
+        return {
+          location: c[0]?.trim(),
+          cable: c[3]?.trim()
+        };
+      });
+  })
+  .catch(err => {
+    console.error("Error cargando data_imp.csv", err);
   });
 
+/* ===== BARCODE ===== */
 function barcode(valor) {
   return `https://barcodeapi.org/api/code128/${valor}`;
 }
@@ -286,9 +299,11 @@ folioInput.addEventListener("input", e => {
 
   clearTimeout(timeout);
 
+  /* Validaciones básicas */
   if (!cable || !location) {
     mainContainer.classList.remove("expandido");
     folioLabel.textContent = "";
+    serieBarcode.src = "";
     loadBot("./Hi_SN_bot.json");
     return;
   }
@@ -300,17 +315,24 @@ folioInput.addEventListener("input", e => {
 
     if (!item) {
       folioLabel.textContent = "No encontrado";
+      mainContainer.classList.remove("expandido");
       return;
     }
 
+    /* Resultado */
     mainContainer.classList.add("expandido");
-    folioLabel.textContent = item.serie;
-    serieBarcode.src = barcode(item.serie);
+
+    /* ✅ El mismo valor del cable se muestra */
+    folioLabel.textContent = item.cable;
+
+    /* ✅ Y el mismo valor se convierte en código de barras */
+    serieBarcode.src = barcode(item.cable);
+
     loadBot("./Confused_SN_bot.json");
   }, 400);
 });
 
-/* ===== ZOOM ===== */
+/* ===== ZOOM BARCODE ===== */
 const overlay = document.getElementById("barcode-overlay");
 const zoomImg = document.getElementById("barcode-zoom");
 
