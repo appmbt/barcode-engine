@@ -20,7 +20,6 @@ html, body {
   font-family: "Segoe UI", Arial, sans-serif;
 }
 
-/* ===== FULLSCREEN ===== */
 .fullscreen-container {
   position: fixed;
   inset: 0;
@@ -30,7 +29,6 @@ html, body {
   background: linear-gradient(135deg, #667eea, #764ba2);
 }
 
-/* ===== FONDO ===== */
 #background-lottie {
   position: fixed;
   inset: 0;
@@ -39,7 +37,6 @@ html, body {
   pointer-events: none;
 }
 
-/* ===== CONTENEDOR ===== */
 .central-container {
   position: relative;
   z-index: 2;
@@ -50,14 +47,12 @@ html, body {
   box-shadow: 0 25px 70px rgba(0,0,0,.35);
   display: flex;
   transition: .5s ease;
-  backdrop-filter: blur(12px);
 }
 
 .central-container.expandido {
   width: 65vw;
 }
 
-/* ===== LOGO ===== */
 #logo-mbt {
   position: absolute;
   top: 35px;
@@ -66,7 +61,6 @@ html, body {
   z-index: 5;
 }
 
-/* ===== IZQUIERDA ===== */
 .left-panel {
   flex: 1;
   padding: 40px 30px;
@@ -110,10 +104,6 @@ html, body {
   margin-bottom: 12px;
 }
 
-.search-container select option {
-  text-align: center;
-}
-
 #folioLabel {
   margin-top: 25px;
   font-weight: 700;
@@ -121,7 +111,6 @@ html, body {
   color: #2f6dff;
 }
 
-/* ===== DERECHA ===== */
 .right-panel {
   flex: 1;
   display: none;
@@ -155,7 +144,6 @@ html, body {
   cursor: zoom-in;
 }
 
-/* ===== OVERLAY ===== */
 #barcode-overlay {
   position: fixed;
   inset: 0;
@@ -185,7 +173,6 @@ html, body {
 
     <div id="logo-mbt"></div>
 
-    <!-- IZQUIERDA -->
     <div class="left-panel">
       <h2>Implementaciones Mainbit</h2>
       <div id="lottie-bot"></div>
@@ -203,7 +190,6 @@ html, body {
       <div id="folioLabel"></div>
     </div>
 
-    <!-- DERECHA -->
     <div class="right-panel">
       <div class="card">
         <span class="label">Serie</span>
@@ -219,7 +205,7 @@ html, body {
 </div>
 
 <script>
-/* ===== LOTTIe ===== */
+/* ===== LOTTIE ===== */
 const botContainer = document.getElementById("lottie-bot");
 const mainContainer = document.getElementById("mainContainer");
 const folioInput = document.getElementById("folioInput");
@@ -243,7 +229,7 @@ function loadBot(path) {
 
 loadBot("./Hi_SN_bot.json");
 
-/* ===== DATA (igual que antes) ===== */
+/* ===== DATA ===== */
 let baseDatos = [];
 
 fetch("data_imp.csv")
@@ -254,18 +240,23 @@ fetch("data_imp.csv")
       .slice(1)
       .map(f => {
         const [location, cpu, monitor, cable] = f.split(",");
-        return { location, cable };
-      });
+        if (!location || !cable) return null;
+        return {
+          location: location.trim(),
+          cable: cable.trim()
+        };
+      })
+      .filter(Boolean);
   });
 
 function barcode(valor) {
   return `https://barcodeapi.org/api/code128/${valor}`;
 }
 
-/* ===== BUSQUEDA (MISMA LÓGICA QUE WOT) ===== */
+/* ===== BUSQUEDA ===== */
 folioInput.addEventListener("input", e => {
   const cable = e.target.value.trim();
-  const location = locationSelect.value;
+  const location = locationSelect.value.trim();
 
   clearTimeout(timeout);
 
@@ -279,26 +270,25 @@ folioInput.addEventListener("input", e => {
 
   timeout = setTimeout(() => {
     const item = baseDatos.find(x =>
-      x.cable === cable && x.location === location
+      x.location === location &&
+      x.cable === cable
     );
 
     if (!item) {
       folioLabel.textContent = "No encontrado";
       mainContainer.classList.remove("expandido");
+      serieBarcode.src = "";
       return;
     }
 
     mainContainer.classList.add("expandido");
-
-    /* ✅ El mismo cable */
     folioLabel.textContent = item.cable;
     serieBarcode.src = barcode(item.cable);
-
     loadBot("./Confused_SN_bot.json");
-  }, 300);
+  }, 250);
 });
 
-/* ===== ZOOM ===== */
+/* ===== ZOOM BARCODE ===== */
 const overlay = document.getElementById("barcode-overlay");
 const zoomImg = document.getElementById("barcode-zoom");
 
