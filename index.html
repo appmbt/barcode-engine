@@ -101,12 +101,17 @@ html, body {
 
 .search-container select,
 .search-container input {
+  text-align: center;
   width: 60%;
   padding: 10px 14px;
   border-radius: 25px;
   border: 2px solid rgba(57,16,123,.75);
   font-size: 14px;
   margin-bottom: 12px;
+}
+
+.search-container select option {
+  text-align: center;
 }
 
 #folioLabel {
@@ -192,7 +197,7 @@ html, body {
           <option value="Ajusco">Ajusco</option>
         </select>
 
-        <input id="folioInput" placeholder="Escribe el cable..." />
+        <input id="folioInput" placeholder="Ingresa la serie del cable para generar el código..." />
       </div>
 
       <div id="folioLabel"></div>
