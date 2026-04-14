@@ -241,32 +241,13 @@ function loadBot(path) {
   });
 }
 
-/* Bot inicial */
 loadBot("./Hi_SN_bot.json");
-
-/* Fondo */
-lottie.loadAnimation({
-  container: document.getElementById("background-lottie"),
-  path: "./background1.json",
-  renderer: "canvas",
-  loop: true,
-  autoplay: true
-});
-
-/* Logo */
-lottie.loadAnimation({
-  container: document.getElementById("logo-mbt"),
-  path: "./Logo_Mbt_wink.json",
-  renderer: "svg",
-  loop: true,
-  autoplay: true
-});
 
 /* ===== DATA ===== */
 let baseDatos = [];
 
 /*
-Estructura del CSV:
+CSV real:
 location,cpu,monitor,cable
 */
 fetch("data_imp.csv")
@@ -274,18 +255,19 @@ fetch("data_imp.csv")
   .then(t => {
     baseDatos = t
       .split("\n")
-      .slice(1) // quitar encabezado
+      .slice(1)
       .map(f => {
         const c = f.split(",");
+
         return {
-          location: c[0]?.trim(),
-          cable: c[3]?.trim()
+          location: (c[0] || "").replace(/\r/g, "").trim().toUpperCase(),
+          cable: (c[3] || "").replace(/\r/g, "").trim().toUpperCase()
         };
       });
+
+    console.log("✅ CSV cargado", baseDatos.length, "registros");
   })
-  .catch(err => {
-    console.error("Error cargando data_imp.csv", err);
-  });
+  .catch(err => console.error("❌ Error cargando CSV", err));
 
 /* ===== BARCODE ===== */
 function barcode(valor) {
@@ -294,12 +276,11 @@ function barcode(valor) {
 
 /* ===== BUSQUEDA ===== */
 folioInput.addEventListener("input", e => {
-  const cable = e.target.value.trim();
-  const location = locationSelect.value;
-
   clearTimeout(timeout);
 
-  /* Validaciones básicas */
+  const cable = e.target.value.trim().toUpperCase();
+  const location = locationSelect.value.trim().toUpperCase();
+
   if (!cable || !location) {
     mainContainer.classList.remove("expandido");
     folioLabel.textContent = "";
@@ -310,29 +291,26 @@ folioInput.addEventListener("input", e => {
 
   timeout = setTimeout(() => {
     const item = baseDatos.find(x =>
-      x.location === location && x.cable === cable
+      x.location === location &&
+      x.cable === cable
     );
 
     if (!item) {
       folioLabel.textContent = "No encontrado";
       mainContainer.classList.remove("expandido");
+      serieBarcode.src = "";
       return;
     }
 
-    /* Resultado */
+    /* ✅ ENCONTRADO */
     mainContainer.classList.add("expandido");
-
-    /* ✅ El mismo valor del cable se muestra */
     folioLabel.textContent = item.cable;
-
-    /* ✅ Y el mismo valor se convierte en código de barras */
     serieBarcode.src = barcode(item.cable);
-
     loadBot("./Confused_SN_bot.json");
-  }, 400);
+  }, 300);
 });
 
-/* ===== ZOOM BARCODE ===== */
+/* ===== ZOOM ===== */
 const overlay = document.getElementById("barcode-overlay");
 const zoomImg = document.getElementById("barcode-zoom");
 
